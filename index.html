@@ -1,6 +1,13 @@
 <title>Popup Matryoshka</title>
 <link rel="preconnect" href="https://fonts.gstatic.com">
 <link href="https://fonts.googleapis.com/css2?family=Imbue:wght@300;500&family=Montserrat:wght@300&display=swap" rel="stylesheet"> 
+<link rel="preload" href="top-0.png" as="image" type="image/png" />
+<link rel="preload" href="top-1.png" as="image" type="image/png" />
+<link rel="preload" href="top-2.png" as="image" type="image/png" />
+<link rel="preload" href="bottom-0.png" as="image" type="image/png" />
+<link rel="preload" href="bottom-1.png" as="image" type="image/png" />
+<link rel="preload" href="bottom-2.png" as="image" type="image/png" />
+
 <style>
     body {
         display: flex;
@@ -12,6 +19,8 @@
         background: #affeea;
         color: #320053;
         font-family: 'Montserrat', sans-serif;
+        height: 100%;
+        margin: 0;
     }
 
     a {
@@ -53,7 +62,7 @@
     }
 </style>
 <script>
-    let ratio = 1.72;
+    let ratio = 1.69;
     let shrink = .8;
     let total = 4;
     let minWidth, minHeight;
@@ -102,6 +111,7 @@
         const y = (opener.outerHeight - height) / 2 + opener.screenTop;
 
         const popup = window.open(`popup.html?${Date.now()}#${n}${n >= total - 1 ? 'l' : ''}`, 'popup' + Date.now(), `width=${width}, height=${height}, left=${x}, top=${y}`);
+        popup.resizeTo(width, height);
 
         popups.push(popup);
     }
