@@ -1,0 +1,77 @@
+<style>
+    #container {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+    }
+    #top {
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        position: absolute;
+        top: 1%;
+        left: 0;
+        z-index: 1;
+        width: 100%;
+    }
+    #bottom {
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        position: absolute;
+        bottom: 1%;
+        left: 0;
+        z-index: 0;
+        width: 100%;
+    }
+    img {
+        width: 96%;
+    }
+</style>
+<script>
+    let last = false;
+    window.imageNumber = 0;
+
+    if (location.hash) {
+        let s = location.hash.substring(1);
+
+        if (s.indexOf('l') > -1) {
+            last = true;
+            s = s.replace('l', '');
+        }
+
+        let n = parseInt(s);
+
+        if (n) {
+            imageNumber = n;
+        }
+    }
+
+    document.write('<div id="container">');
+    document.write(`<div id="top"><img src="top-${imageNumber % 3}.png?1" /></div>`);
+    document.write(`<div id="bottom"><img src="bottom-${imageNumber % 3}.png?1" /></div>`);
+    document.write('</div>');
+
+    let startingHeight;
+
+    function checkHeight() {
+        if (window.innerHeight - startingHeight > 100) {
+            if (!last) {
+                opener.openNext(window);
+            }
+        }
+        else {
+            setTimeout(checkHeight, 50);
+        }
+    }
+
+    window.addEventListener('load', () => {
+        startingHeight = window.innerHeight;
+
+        document.getElementById('container').style.width = window.innerWidth;
+
+        checkHeight();
+    });
+</script>

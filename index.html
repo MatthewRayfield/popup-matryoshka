@@ -1,0 +1,55 @@
+<script>
+    let ratio = 1.72;
+    let shrink = .8;
+    let total = 4;
+    let minWidth, minHeight;
+    let offsetWidth, offsetHeight;
+    let biggestWidth;
+
+    function openFirst() {
+        const popup = window.open('about:blank', 'popup' + Date.now(), 'width=1, height=1, left=0, top=0');
+
+        setTimeout(() => {
+            offsetWidth = popup.outerWidth - popup.innerWidth;
+            offsetHeight = popup.outerHeight - popup.innerHeight;
+
+            minWidth = popup.innerWidth;
+            minHeight = popup.innerHeight;
+
+            let aspectHeight = minWidth * ratio;
+
+            if (aspectHeight < minHeight) {
+                aspectHeight = minHeight;
+                minWidth = Math.floor(minHeight / ratio);
+            }
+            minHeight = Math.floor(aspectHeight);
+
+            biggestWidth = minWidth * Math.pow(1 / shrink, total - 1);
+
+            popup.resizeTo(biggestWidth + offsetWidth, (biggestWidth * ratio) + offsetHeight);
+            popup.moveTo(0, (screen.availHeight - popup.outerHeight) / 2 - 100);
+
+            popup.location.href = 'popup.html?' + Date.now();
+
+        }, 100);
+    }
+
+    function openNext(opener) {
+        const n = opener.imageNumber + 1;
+
+        let width = opener.innerWidth * shrink;
+        let height = width * ratio;
+        width += offsetWidth;
+        height += offsetHeight;
+
+        const x = (opener.outerWidth - width) / 2 + opener.screenLeft;
+        const y = (opener.outerHeight - height) / 2 + opener.screenTop;
+
+        const popup = window.open(`popup.html?${Date.now()}#${n}${n >= total - 1 ? 'l' : ''}`, 'popup' + Date.now(), `width=${width}, height=${height}, left=${x}, top=${y}`);
+    }
+
+    window.addEventListener('load', () => {
+        document.querySelector('button').addEventListener('click', openFirst);
+    });
+</script>
+<button>OPEN</button>
