@@ -1,10 +1,15 @@
 <style>
+    body {
+        overflow: hidden;
+    }
     #container {
         position: absolute;
         top: 0;
         left: 0;
         width: 100%;
         height: 100%;
+
+        min-height: 170vw;
     }
     #top {
         display: flex;
@@ -26,11 +31,24 @@
         z-index: 0;
         width: 100%;
     }
+    #confetti-box {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+    }
+    .confetti {
+        position: absolute;
+        width: 5px;
+        height: 15px;
+        z-index: 1;
+    }
+
     img {
         width: 96%;
     }
 </style>
 <script>
+    let armed = true;
     let last = false;
     window.imageNumber = 0;
 
@@ -52,19 +70,111 @@
     document.write('<div id="container">');
     document.write(`<div id="top"><img src="top-${imageNumber % 3}.png?1" /></div>`);
     document.write(`<div id="bottom"><img src="bottom-${imageNumber % 3}.png?1" /></div>`);
-    document.write('</div>');
+    document.write('<div id="confetti-box"></div></div>');
 
     let startingHeight;
 
     function checkHeight() {
-        if (window.innerHeight - startingHeight > 100) {
-            if (!last) {
+        let diff = window.innerHeight - startingHeight;
+
+        if (diff > 100) {
+            if (last) {
+                if (armed) {
+                    armed = false;
+                    startConfetti();
+                }
+
+                setTimeout(checkHeight, 50);
+            }
+            else {
                 opener.openNext(window);
             }
         }
         else {
+            if (!armed && diff < 30) {
+                armed = true;
+            }
+
             setTimeout(checkHeight, 50);
         }
+    }
+
+    function rotate(x, y, angle) {
+        const radians = (Math.PI / 180) * angle;
+        const cos = Math.cos(radians);
+        const sin = Math.sin(radians);
+        const nx = (cos * x) + (sin * y);
+        const ny = (cos * y) - (sin * x);
+
+        return {x: nx, y: ny};
+    }
+
+    let confettiStarted = false
+    let confettiBox;
+    let confettis = [];
+    function startConfetti() {
+        let c = 200;
+        confettiBox = document.getElementById('confetti-box');
+
+        for (let i = 0; i < c; i ++) {
+            let confetti = {x: 0, y: 0, r: Math.random()*180};
+
+            let velocity = (Math.random() * 25) + 1;
+            let velocities = rotate(0, velocity, Math.random() * 360);
+
+            confetti.xv = velocities.x;
+            confetti.yv = velocities.y;
+            confetti.rv = (Math.random() * 20) - 10;
+
+            let element = document.createElement('div');
+
+            element.className = 'confetti';
+            element.style.background = ['#5827ff', '#26dfbe', '#ff274e', '#7126df', '#fff027', '#df267d'][Math.floor(Math.random()*6)];
+            element.style.transform = `rotate(${confetti.r}deg)`;
+            element.style.left = confetti.x;
+            element.style.top = confetti.y;
+
+            confettiBox.appendChild(element);
+
+            confetti.element = element;
+
+            confettis.push(confetti);
+        }
+
+        if (!confettiStarted) {
+            confettiStarted = true;
+            updateConfetti();
+        }
+    }
+
+    let fps = 30;
+    function updateConfetti() {
+        const survivors = [];
+        const halfWidth = window.innerWidth / 2;
+        const halfHeight = window.innerHeight / 2;
+
+        confettis.forEach(confetti => {
+            confetti.yv += 3/fps;
+
+            confetti.x += confetti.xv;
+            confetti.y += confetti.yv;
+            confetti.r += confetti.rv;
+
+            confetti.element.style.left = confetti.x;
+            confetti.element.style.top = confetti.y;
+            confetti.element.style.transform = `rotate(${confetti.r}deg)`;
+
+            if (confetti.x > -halfWidth - 15 && confetti.x <= halfWidth && confetti.y < halfHeight) {
+                survivors.push(confetti);
+            }
+            else {
+                confettiBox.removeChild(confetti.element);
+            }
+        });
+
+        confettis = survivors;
+
+        setTimeout(updateConfetti, 1000/fps);
     }
 
     window.addEventListener('load', () => {
