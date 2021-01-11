@@ -1,6 +1,8 @@
+<title>Matryoshka</title>
 <style>
     body {
         overflow: hidden;
+        background: #fff;
     }
     #container {
         position: absolute;
@@ -67,6 +69,7 @@
         }
     }
 
+    //document.write(`<body style="background: #${['fff78f', 'fecab7', '94edd7'][imageNumber % 3]}">`);
     document.write('<div id="container">');
     document.write(`<div id="top"><img src="top-${imageNumber % 3}.png?1" /></div>`);
     document.write(`<div id="bottom"><img src="bottom-${imageNumber % 3}.png?1" /></div>`);
@@ -134,6 +137,13 @@
             element.style.transform = `rotate(${confetti.r}deg)`;
             element.style.left = confetti.x;
             element.style.top = confetti.y;
+
+            if (Math.round(Math.random())) {
+                element.style.borderTopLeftRadius = '50%';
+            }
+            else {
+                element.style.borderTopRightRadius = '50%';
+            }
 
             confettiBox.appendChild(element);
 
